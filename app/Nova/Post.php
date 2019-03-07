@@ -2,34 +2,32 @@
 
 namespace App\Nova;
 
+use App\User;
 use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\Password;
-use Laravel\Nova\Panel;
+use Illuminate\Http\Request;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\BelongsTo;
 
 
-
-
-class User extends Resource
+class Post extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\\User';
+    public static $model = 'App\\Post';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
@@ -37,10 +35,10 @@ class User extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name', 'email',
+        'id','title'
     ];
 
-    /**
+     /**
      * Get the fields displayed by the resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -51,39 +49,15 @@ class User extends Resource
         return [
             ID::make()->sortable(),
 
-            Gravatar::make(),
-
-            Text::make('Name')
-                ->sortable()
-                ->rules('required', 'max:255'),
-            Password::make('Password')
-                ->onlyOnForms()
-                ->creationRules('required', 'string', 'min:6')
-                ->updateRules('nullable', 'string', 'min:6'),
-            DateTime::make('Updated At', 'updated_at')->hideFromIndex(),
-            Markdown::make('description'),
-            Textarea::make('description'),
-            new Panel('Address Information', $this->addressFields()),
+            Text::make('title')
+                ->rules('required', 'max:200'),
+            Text::make('description')->rules('required'),
+            BelongsTo::make('User')->searchable()->rules('required'),
+            Markdown::make('content')->rules('required'),
+            DateTime::make('Published At')->rules('required'),
+            DateTime::make('Updated At', 'updated_at')->exceptOnForms(),
         ];
     }
-
-    /**
-     * 获取资源的所有地址字段。
-     *
-     * @return array
-     */
-    protected function addressFields()
-    {
-        return [
-
-            Text::make('Email')
-                ->sortable()
-                ->rules('required', 'email', 'max:254')
-                ->creationRules('unique:users,email')
-                ->updateRules('unique:users,email,{{resourceId}}'),
-        ];
-    }
-
 
     /**
      * Get the cards available for the request.

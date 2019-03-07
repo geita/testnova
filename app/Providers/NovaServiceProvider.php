@@ -6,6 +6,8 @@ use Laravel\Nova\Nova;
 use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\NovaApplicationServiceProvider;
+use App\Nova\User;
+use App\Nova\Post;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
@@ -78,5 +80,18 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function register()
     {
         //
+    }
+    /**
+     * 注册应用程序的 Nova 资源。
+     *
+     * @return void
+     */
+    protected function resources()
+    {
+        Nova::resourcesIn(app_path('Nova'));
+
+        Nova::resources([
+
+        ]);
     }
 }
