@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -29,5 +29,13 @@ class Post extends Authenticatable
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * admin表
+     */
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'operation_by', 'id');
     }
 }

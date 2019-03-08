@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Nova\Admin;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
@@ -59,6 +60,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         return [
             new Help,
+            new \Wilburpowery\RoutesCached\RoutesCached,
         ];
     }
 
@@ -69,7 +71,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools()
     {
-        return [];
+        return [
+            // ...
+            \Vyuldashev\NovaPermission\NovaPermissionTool::make(),
+        ];
     }
 
     /**

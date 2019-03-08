@@ -22,7 +22,7 @@ class User extends Resource
      *
      * @var string
      */
-    public static $model = 'App\\User';
+    public static $model = 'App\Models\User';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -53,34 +53,20 @@ class User extends Resource
 
             Gravatar::make(),
 
-            Text::make('Name')
+            Text::make('名称', 'name')
                 ->sortable()
                 ->rules('required', 'max:255'),
-            Password::make('Password')
+            Password::make('密码', 'password')
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:6')
                 ->updateRules('nullable', 'string', 'min:6'),
-            DateTime::make('Updated At', 'updated_at')->hideFromIndex(),
-            Markdown::make('description'),
-            Textarea::make('description'),
-            new Panel('Address Information', $this->addressFields()),
-        ];
-    }
-
-    /**
-     * 获取资源的所有地址字段。
-     *
-     * @return array
-     */
-    protected function addressFields()
-    {
-        return [
-
-            Text::make('Email')
+            Textarea::make('个人说明', 'description'),
+            Text::make('邮箱', 'email')
                 ->sortable()
                 ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
+            DateTime::make('更新时间', 'updated_at')->hideFromIndex(),
         ];
     }
 

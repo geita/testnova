@@ -2,33 +2,34 @@
 
 namespace App\Nova;
 
-use App\Models\User;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
 use Illuminate\Http\Request;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Gravatar;
+use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Panel;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\Textarea;
-use Laravel\Nova\Fields\BelongsTo;
-use Saumini\EllipsisTextarea\EllipsisTextarea;
+use Laravel\Nova\Fields\MorphToMany;
 
 
-class Post extends Resource
+
+class Admin extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\Models\Post';
+    public static $model = 'App\Models\Admin';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'name';
 
     /**
      * The columns that should be searched.
@@ -36,10 +37,10 @@ class Post extends Resource
      * @var array
      */
     public static $search = [
-        'id','title'
+        'id', 'name', 'email',
     ];
 
-     /**
+    /**
      * Get the fields displayed by the resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -50,17 +51,23 @@ class Post extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('标题', 'title')
-                ->rules('required', 'max:200'),
-            Text::make('描述', 'description')->rules('required'),
-            EllipsisTextarea::make('描述', 'description')
-                ->displayLength(5),
-            //BelongsTo::make('User', 'User')->searchable()->rules('required'),
-            BelongsTo::make('User', 'User')->searchable()->rules('required'),
-            BelongsTo::make('Admin')->searchable()->rules('required'),
-            Markdown::make('内容', 'content')->rules('required'),
-            DateTime::make('发布时间', 'published_at')->rules('required'),
-            DateTime::make('创建时间', 'created_at')->exceptOnForms(),
+            Gravatar::make(),
+
+            Text::make('名称', 'name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+            Text::make('邮箱', 'email')
+                ->sortable()
+                ->rules('required', 'email', 'max:254')
+                ->creationRules('unique:users,email')
+                ->updateRules('unique:users,email,{{resourceId}}'),
+            Password::make('密码', 'password')
+                ->onlyOnForms()
+                ->creationRules('required', 'string', 'min:6')
+                ->updateRules('nullable', 'string', 'min:6'),
+            DateTime::make('创建时间', 'created_at')->hideFromIndex(),
+            MorphToMany::make('角色', 'roles', \Vyuldashev\NovaPermission\Role::class),
+            MorphToMany::make('权限', 'Permissions', \Vyuldashev\NovaPermission\Permission::class),
         ];
     }
 

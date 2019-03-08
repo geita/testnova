@@ -71,11 +71,12 @@ return [
     */
 
     'middleware' => [
-        'web',
+        'web','admin',
         Authenticate::class,
         DispatchServingNovaEvent::class,
         BootTools::class,
         Authorize::class,
+        \Vyuldashev\NovaPermission\ForgetCachedPermissions::class,
     ],
 
 ];
